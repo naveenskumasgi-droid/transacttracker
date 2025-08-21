@@ -1,3 +1,4 @@
+-------- K U M A S G I ------------
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,10 +21,24 @@
       padding: 1rem;
       background: #fff;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
     }
 
     header h1 {
       margin: 0 auto;
+    }
+
+    .notification {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      cursor: pointer;
+    }
+
+    #reminder {
+      display: block;
+      font-size: 0.8rem;
+      color: red;
     }
 
     .summary {
@@ -142,7 +157,7 @@
         <option value="Borrowed">Borrowed</option>
       </select>
       <input type="number" id="amount" placeholder="Amount" required>
-      <input type="number" step="0.1" id="interest" placeholder="Interest %">
+      <input type="number" step="0.01" id="interest" placeholder="Interest %">
       <input type="date" id="startDate" required>
       <input type="date" id="untilDate" required>
       <button type="submit">Add</button>
@@ -161,6 +176,7 @@
     const filterBtn = document.getElementById('filterBorrowed');
     const showFormBtn = document.getElementById('showForm');
     const formSection = document.getElementById('formSection');
+    const reminder = document.getElementById('reminder');
 
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let showBorrowedOnly = false;
@@ -178,6 +194,16 @@
       return Math.max(0, Math.floor(diff));
     }
 
+    function checkReminders() {
+      const today = new Date().toISOString().split("T")[0];
+      const due = transactions.filter(t => t.untilDate === today && t.type === "Borrowed");
+      if (due.length > 0) {
+        reminder.innerText = `⚠️ ${due.length} payment(s) due today`;
+      } else {
+        reminder.innerText = "";
+      }
+    }
+
     function renderTransactions() {
       tableBody.innerHTML = '';
       let totalLent = 0, totalBorrowed = 0, netBalance = 0, netWithInterest = 0;
@@ -190,7 +216,7 @@
 
         const daysPassed = calculateDays(t.startDate, new Date());
         const months = daysPassed / 30;
-        const interestAmount = (t.amount * (t.interest / 100)) * months;
+        const interestAmount = (t.amount * (parseFloat(t.interest) / 100)) * months;
         const net = t.type === 'Lent'
           ? t.amount + interestAmount
           : -(t.amount + interestAmount);
@@ -212,7 +238,7 @@
           <td>${daysPassed}</td>
           <td>${interestAmount.toFixed(2)}</td>
           <td>${net.toFixed(2)}</td>
-          <td><button onclick="deleteTransaction(${i})">🗑️</button></td>
+          <td><button onclick="deleteTransaction(${i})">❌</button></td>
         `;
 
         tableBody.appendChild(row);
@@ -224,6 +250,7 @@
       document.getElementById('netBalanceInterest').innerText = netWithInterest.toFixed(2);
 
       localStorage.setItem('transactions', JSON.stringify(transactions));
+      checkReminders();
     }
 
     form.addEventListener('submit', e => {
