@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,278 +9,253 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f2f5f9;
+      background: #f5f5f5;
+      color: #333;
     }
+
     header {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      padding: 15px;
-      background: #4a90e2;
-      color: white;
-      font-size: 20px;
-      font-weight: bold;
-      position: relative;
+      padding: 1rem;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    header span {
-      margin-left: 10px;
+
+    header h1 {
+      margin: 0 auto;
     }
-    header .bell {
-      position: absolute;
-      right: 20px;
-      font-size: 20px;
-      cursor: pointer;
-    }
+
     .summary {
       display: flex;
+      gap: 1rem;
       justify-content: space-around;
-      flex-wrap: wrap;
-      margin: 15px;
-      gap: 10px;
+      margin: 1rem;
     }
+
     .box {
       flex: 1;
-      min-width: 180px;
-      padding: 15px;
-      border-radius: 12px;
-      color: white;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
       text-align: center;
+      font-weight: bold;
     }
-    .lent { background: #2ecc71; }
-    .borrowed { background: #e74c3c; }
-    .net { background: #9b59b6; }
-    .without-int { background: #3498db; }
+
+    .green { background: #d4edda; color: #155724; }
+    .red { background: #f8d7da; color: #721c24; }
+    .neutral { background: #e2e3e5; color: #383d41; }
 
     table {
-      width: 95%;
-      margin: 20px auto;
+      width: 100%;
       border-collapse: collapse;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin: 1rem 0;
+      background: #fff;
     }
+
     th, td {
-      padding: 12px;
       border: 1px solid #ddd;
+      padding: 0.5rem;
       text-align: center;
     }
-    th {
-      background: #4a90e2;
-      color: white;
-    }
-    .actions button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
+
+    tr.lent { background: #eaf9ea; }
+    tr.borrowed { background: #fceaea; }
+
+    .form-section {
+      display: none;
+      padding: 1rem;
+      background: #fff;
+      margin: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    /* Floating buttons */
-    .fab {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #4a90e2;
-      color: white;
-      border-radius: 50%;
-      width: 55px;
-      height: 55px;
+    .form-section input, .form-section select, .form-section button {
+      display: block;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      width: 100%;
+    }
+
+    .controls {
       display: flex;
       justify-content: center;
-      align-items: center;
-      font-size: 26px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      cursor: pointer;
-      margin: 10px 0;
+      gap: 1rem;
+      margin: 1rem;
     }
-    .fab.b-btn { bottom: 90px; background: #e74c3c; }
 
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      width: 320px;
-    }
-    .modal-content input, .modal-content select {
-      width: 100%;
-      margin: 8px 0;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    .modal-content button {
-      width: 100%;
-      padding: 10px;
-      background: #4a90e2;
-      color: white;
+    .controls button {
+      padding: 0.8rem 1.2rem;
+      font-size: 1.2rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 50%;
       cursor: pointer;
-      margin-top: 10px;
     }
+
+    #filterBorrowed { background: #ffcccc; }
+    #showForm { background: #cce5ff; }
   </style>
 </head>
 <body>
   <header>
-    <span>📊 Transaction Tracker</span>
-    <span class="bell" id="notifyBell">🔔</span>
+    <h1>💰 Transaction Tracker</h1>
+    <div class="date" id="currentDate"></div>
+    <div class="notification">🔔 <span id="reminder"></span></div>
   </header>
 
-  <div class="summary">
-    <div class="box lent">Total Lent<br><span id="totalLent">0</span></div>
-    <div class="box without-int">Lent w/o Interest<br><span id="totalWithoutInterest">0</span></div>
-    <div class="box borrowed">Total Borrowed<br><span id="totalBorrowed">0</span></div>
-    <div class="box net">Net Balance (w/ Int)<br><span id="netBalance">0</span></div>
-  </div>
+  <!-- Summary Boxes -->
+  <section class="summary">
+    <div class="box green">Total Lent: <span id="totalLent">0</span></div>
+    <div class="box red">Total Borrowed: <span id="totalBorrowed">0</span></div>
+    <div class="box neutral">Net Balance: <span id="netBalance">0</span></div>
+    <div class="box neutral">Net Balance w/ Interest: <span id="netBalanceInterest">0</span></div>
+  </section>
 
-  <table>
+  <!-- Transactions Table -->
+  <table id="transactionTable">
     <thead>
       <tr>
-        <th>Nos.</th>
+        <th>No</th>
         <th>Name</th>
         <th>Type</th>
         <th>Amount</th>
-        <th>Rate (%)</th>
-        <th>From</th>
-        <th>Until</th>
-        <th>Days</th>
-        <th>Reason</th>
-        <th>Return</th>
+        <th>Interest %</th>
+        <th>Start Date</th>
+        <th>Until Date</th>
+        <th>Days Passed</th>
+        <th>Interest</th>
         <th>Net Balance</th>
         <th>Action</th>
       </tr>
     </thead>
-    <tbody id="transactionTable"></tbody>
+    <tbody id="tableBody"></tbody>
   </table>
 
-  <!-- Floating buttons -->
-  <div class="fab" id="addBtn">+</div>
-  <div class="fab b-btn" id="borrowBtn">B</div>
-
-  <!-- Modal -->
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <h3>Add Transaction</h3>
-      <input type="text" id="name" placeholder="Name">
-      <select id="type">
-        <option value="lent">Lent</option>
-        <option value="borrowed">Borrowed</option>
+  <!-- Add Transaction Form -->
+  <section class="form-section" id="formSection">
+    <h2>Add Transaction</h2>
+    <form id="transactionForm">
+      <input type="text" id="name" placeholder="Name" required>
+      <select id="type" required>
+        <option value="Lent">Lent</option>
+        <option value="Borrowed">Borrowed</option>
       </select>
-      <input type="number" id="amount" placeholder="Amount">
-      <input type="number" step="0.1" id="rate" placeholder="Interest % (optional)">
-      <input type="date" id="fromDate">
-      <input type="date" id="untilDate">
-      <input type="text" id="reason" placeholder="Reason">
-      <button onclick="addTransaction()">Save</button>
-    </div>
+      <input type="number" id="amount" placeholder="Amount" required>
+      <input type="number" step="0.1" id="interest" placeholder="Interest %">
+      <input type="date" id="startDate" required>
+      <input type="date" id="untilDate" required>
+      <button type="submit">Add</button>
+    </form>
+  </section>
+
+  <!-- Buttons -->
+  <div class="controls">
+    <button id="filterBorrowed">B</button>
+    <button id="showForm">+</button>
   </div>
 
   <script>
-    let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+    const form = document.getElementById('transactionForm');
+    const tableBody = document.getElementById('tableBody');
+    const filterBtn = document.getElementById('filterBorrowed');
+    const showFormBtn = document.getElementById('showForm');
+    const formSection = document.getElementById('formSection');
 
-    function saveData() {
-      localStorage.setItem("transactions", JSON.stringify(transactions));
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    let showBorrowedOnly = false;
+
+    function updateDate() {
+      const today = new Date();
+      document.getElementById('currentDate').innerText = today.toDateString();
+    }
+    updateDate();
+
+    function calculateDays(start, until) {
+      const s = new Date(start);
+      const u = new Date(until);
+      const diff = (u - s) / (1000 * 60 * 60 * 24);
+      return Math.max(0, Math.floor(diff));
     }
 
-    function renderTransactions(filter="all") {
-      const tbody = document.getElementById("transactionTable");
-      tbody.innerHTML = "";
-      let totalLent = 0, totalWithoutInt = 0, totalBorrowed = 0;
+    function renderTransactions() {
+      tableBody.innerHTML = '';
+      let totalLent = 0, totalBorrowed = 0, netBalance = 0, netWithInterest = 0;
 
       transactions.forEach((t, i) => {
-        if (filter !== "all" && t.type !== filter) return;
-        const today = new Date();
-        const from = new Date(t.fromDate);
-        const until = new Date(t.untilDate);
-        const daysPassed = Math.floor((today - from)/(1000*60*60*24));
-        const months = Math.max(0, (until - from)/(1000*60*60*24*30));
-        let netBalance = parseFloat(t.amount);
-        if (t.rate) {
-          netBalance += (t.amount * (t.rate/100) * months);
-        }
+        if (showBorrowedOnly && t.type !== 'Borrowed') return;
 
-        if (t.type === "lent") {
-          totalLent += netBalance;
-          totalWithoutInt += parseFloat(t.amount);
-        } else {
-          totalBorrowed += netBalance;
-        }
+        const row = document.createElement('tr');
+        row.className = t.type.toLowerCase();
 
-        tbody.innerHTML += `
-          <tr>
-            <td>${i+1}</td>
-            <td>${t.name}</td>
-            <td>${t.type}</td>
-            <td>${t.amount}</td>
-            <td>${t.rate || "-"}</td>
-            <td>${t.fromDate}</td>
-            <td>${t.untilDate}</td>
-            <td>${daysPassed} days</td>
-            <td>${t.reason}</td>
-            <td>${t.untilDate}</td>
-            <td>${netBalance.toFixed(2)}</td>
-            <td class="actions"><button onclick="deleteTransaction(${i})">🗑️</button></td>
-          </tr>
+        const daysPassed = calculateDays(t.startDate, new Date());
+        const months = daysPassed / 30;
+        const interestAmount = (t.amount * (t.interest / 100)) * months;
+        const net = t.type === 'Lent'
+          ? t.amount + interestAmount
+          : -(t.amount + interestAmount);
+
+        if (t.type === 'Lent') totalLent += t.amount;
+        else totalBorrowed += t.amount;
+
+        netBalance += t.type === 'Lent' ? t.amount : -t.amount;
+        netWithInterest += net;
+
+        row.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${t.name}</td>
+          <td>${t.type}</td>
+          <td>${t.amount}</td>
+          <td>${t.interest}</td>
+          <td>${t.startDate}</td>
+          <td>${t.untilDate}</td>
+          <td>${daysPassed}</td>
+          <td>${interestAmount.toFixed(2)}</td>
+          <td>${net.toFixed(2)}</td>
+          <td><button onclick="deleteTransaction(${i})">🗑️</button></td>
         `;
+
+        tableBody.appendChild(row);
       });
 
-      document.getElementById("totalLent").innerText = totalLent.toFixed(2);
-      document.getElementById("totalWithoutInterest").innerText = totalWithoutInt.toFixed(2);
-      document.getElementById("totalBorrowed").innerText = totalBorrowed.toFixed(2);
-      document.getElementById("netBalance").innerText = (totalLent-totalBorrowed).toFixed(2);
+      document.getElementById('totalLent').innerText = totalLent;
+      document.getElementById('totalBorrowed').innerText = totalBorrowed;
+      document.getElementById('netBalance').innerText = netBalance.toFixed(2);
+      document.getElementById('netBalanceInterest').innerText = netWithInterest.toFixed(2);
+
+      localStorage.setItem('transactions', JSON.stringify(transactions));
     }
 
-    function addTransaction() {
-      const t = {
-        name: document.getElementById("name").value,
-        type: document.getElementById("type").value,
-        amount: parseFloat(document.getElementById("amount").value),
-        rate: parseFloat(document.getElementById("rate").value) || null,
-        fromDate: document.getElementById("fromDate").value,
-        untilDate: document.getElementById("untilDate").value,
-        reason: document.getElementById("reason").value
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const newTransaction = {
+        name: document.getElementById('name').value,
+        type: document.getElementById('type').value,
+        amount: parseFloat(document.getElementById('amount').value),
+        interest: parseFloat(document.getElementById('interest').value || 0),
+        startDate: document.getElementById('startDate').value,
+        untilDate: document.getElementById('untilDate').value
       };
-      transactions.push(t);
-      saveData();
+      transactions.push(newTransaction);
       renderTransactions();
-      closeModal();
-    }
+      form.reset();
+      formSection.style.display = 'none';
+    });
 
-    function deleteTransaction(i) {
-      transactions.splice(i,1);
-      saveData();
+    function deleteTransaction(index) {
+      transactions.splice(index, 1);
       renderTransactions();
     }
 
-    function closeModal() {
-      document.getElementById("modal").style.display = "none";
-    }
-    document.getElementById("addBtn").onclick = () => {
-      document.getElementById("modal").style.display = "flex";
-    };
+    filterBtn.addEventListener('click', () => {
+      showBorrowedOnly = !showBorrowedOnly;
+      renderTransactions();
+    });
 
-    document.getElementById("borrowBtn").onclick = () => {
-      renderTransactions("borrowed");
-    };
-
-    document.getElementById("notifyBell").onclick = () => {
-      const today = new Date().toISOString().split("T")[0];
-      let due = transactions.find(t => t.untilDate === today);
-      if (due) alert(`Reminder: ${due.name} should return money today!`);
-      else alert("No reminders today 🎉");
-    };
+    showFormBtn.addEventListener('click', () => {
+      formSection.style.display =
+        formSection.style.display === 'block' ? 'none' : 'block';
+    });
 
     renderTransactions();
   </script>
