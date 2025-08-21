@@ -1,331 +1,319 @@
-<!--
-Paste this entire block into your README.md (inside ```html ... ```),
-or save as index.html. It’s fully self-contained (HTML+CSS+JS).
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Transaction Tracker</title>
   <style>
-    :root{
-      --bg: #f5f7fb;
-      --card: #ffffff;
-      --ink: #0f172a;
-      --muted: #475569;
-      --brand: #2563eb;
-      --brand-2:#22c55e;
-      --danger:#ef4444;
-      --shadow: 0 8px 24px rgba(15,23,42,.08);
-      --radius:16px;
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(120deg, #a1c4fd, #c2e9fb);
+      margin: 0;
+      padding: 0;
+      color: #333;
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,system-ui,Arial}
-    header{
-      position:sticky; top:0; z-index:10;
-      background:linear-gradient(135deg,#60a5fa,#22d3ee);
-      color:#fff; padding:16px 20px; box-shadow:var(--shadow)
+    header {
+      background: #4a90e2;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      position: relative;
     }
-    .row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
-    h1{margin:0; font-size:1.4rem; letter-spacing:.2px}
-    .hdr-right{display:flex; align-items:center; gap:8px}
-    #today{font-weight:600; background:rgba(255,255,255,.2); padding:6px 10px; border-radius:999px}
-    #btnBorrowed{
-      border:0; width:36px; height:36px; border-radius:999px; cursor:pointer;
-      background:#fff; color:#1d4ed8; font-weight:800; box-shadow:var(--shadow)
+    header .date {
+      font-size: 14px;
+      margin-top: 5px;
+      opacity: 0.9;
     }
-    .wrap{max-width:1100px; margin:18px auto; padding:0 14px}
-    .grid{
-      display:grid; gap:12px; grid-template-columns:repeat(3,minmax(0,1fr));
+    .container {
+      width: 95%;
+      max-width: 1100px;
+      margin: 20px auto;
     }
-    @media (max-width:900px){ .grid{grid-template-columns:1fr} }
-    .widget{
-      background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); position:relative; overflow:hidden
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
     }
-    .widget h3{margin:0 0 6px; color:var(--muted); font-size:.95rem; font-weight:600}
-    .widget p{margin:0; font-size:1.35rem; font-weight:800}
-    .widget--blue{border-left:6px solid #2563eb}
-    .widget--green{border-left:6px solid #22c55e}
-    .widget--violet{border-left:6px solid #8b5cf6}
-
-    .note{display:none; margin:14px 0; padding:12px 14px; border-radius:12px; background:#fde68a; color:#7c2d12; font-weight:600; box-shadow:var(--shadow)}
-    .note.show{display:block}
-
-    table{width:100%; border-collapse:collapse; margin-top:12px; background:var(--card); border-radius:14px; overflow:hidden; box-shadow:var(--shadow)}
-    thead th{background:#e2e8f0; color:#0f172a; font-weight:700; font-size:.9rem}
-    th,td{padding:12px 10px; text-align:center; border-bottom:1px solid #eef2f7}
-    tbody tr:hover{background:#f8fafc}
-    .chip{display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size:.8rem}
-    .chip.lent{background:#dcfce7; color:#166534}
-    .chip.borrowed{background:#fee2e2; color:#991b1b}
-
-    .fab{
-      position:fixed; right:18px; bottom:18px; width:58px; height:58px; border-radius:999px; border:0;
-      background:var(--brand-2); color:#fff; font-size:28px; cursor:pointer; box-shadow:var(--shadow)
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+      transition: transform 0.2s;
     }
-
-    /* Modal */
-    .modal{position:fixed; inset:0; display:none; place-items:center; background:rgba(15,23,42,.45); padding:16px}
-    .modal.show{display:grid}
-    .card{
-      width:min(460px,100%); background:var(--card); border-radius:18px; box-shadow:var(--shadow); padding:18px
+    .card:hover { transform: translateY(-3px); }
+    .card h3 {
+      margin: 8px 0;
+      font-size: 16px;
+      color: #555;
     }
-    .card h2{margin:0 0 8px; font-size:1.2rem}
-    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-    .field{display:flex; flex-direction:column; gap:6px}
-    .field label{font-size:.85rem; color:var(--muted); font-weight:600}
-    input[type="text"], input[type="number"], input[type="date"], select, textarea{
-      width:100%; padding:10px 12px; border-radius:12px; border:1px solid #e5e7eb; background:#fff; outline:none; transition:border .2s, box-shadow .2s;
-      font:inherit
+    .card p {
+      font-size: 18px;
+      color: #000;
     }
-    input:focus, select:focus, textarea:focus{border-color:#93c5fd; box-shadow:0 0 0 4px rgba(59,130,246,.15)}
-    .actions{display:flex; gap:10px; margin-top:12px}
-    .btn{flex:1; border:0; padding:12px; border-radius:12px; font-weight:700; cursor:pointer}
-    .btn.primary{background:var(--brand); color:#fff}
-    .btn.ghost{background:#f1f5f9}
-
-    .del{border:0; background:var(--danger); color:#fff; padding:6px 10px; border-radius:10px; cursor:pointer}
-    .muted{color:var(--muted)}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border-bottom: 1px solid #eee;
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+    }
+    th {
+      background: #4a90e2;
+      color: white;
+      font-size: 15px;
+    }
+    tr:hover { background: #f9f9f9; }
+    .floating-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+    }
+    .btn {
+      background: #4a90e2;
+      color: white;
+      padding: 15px;
+      border-radius: 50%;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: 0.3s;
+    }
+    .btn:hover { background: #357ABD; }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10000; /* Fixed overlap issue */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background: white;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+    }
+    .modal h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .modal input, .modal select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .modal button {
+      width: 100%;
+      padding: 10px;
+      background: #4a90e2;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .close {
+      float: right;
+      font-size: 18px;
+      cursor: pointer;
+      color: red;
+    }
+    .notification {
+      background: #ffcccc;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #b30000;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <header>
-    <div class="row">
-      <h1>💰 Transaction Tracker</h1>
-      <div class="hdr-right">
-        <span id="today" title="Today"></span>
-        <button id="btnBorrowed" title="Toggle Borrowed view">B</button>
-      </div>
-    </div>
+    Transaction Tracker
+    <div class="date" id="todayDate"></div>
   </header>
 
-  <div class="wrap">
-    <!-- Summary widgets -->
-    <div class="grid">
-      <div class="widget widget--blue">
-        <h3>Total Net Balance (with interest)</h3>
-        <p id="sumWith">₹0.00</p>
-      </div>
-      <div class="widget widget--green">
-        <h3>Total Net Balance (without interest)</h3>
-        <p id="sumWithout">₹0.00</p>
-      </div>
-      <div class="widget widget--violet">
-        <h3 class="muted">Hint</h3>
-        <p class="muted">Click <strong>B</strong> to view only Borrowed list. Click again to return.</p>
-      </div>
+  <div class="container">
+    <div id="notification"></div>
+    <div class="summary">
+      <div class="card"><h3>Total Net Balance</h3><p id="netBalance">₹0</p></div>
+      <div class="card"><h3>Total Net Balance (With Interest)</h3><p id="netBalanceInterest">₹0</p></div>
+      <div class="card"><h3>Total Borrowed</h3><p id="totalBorrowed">₹0</p></div>
+      <div class="card"><h3>Total Lent</h3><p id="totalLent">₹0</p></div>
     </div>
 
-    <!-- One-time notification (due today) -->
-    <div id="notify" class="note"></div>
-
-    <!-- Records table -->
-    <table id="tbl">
+    <table id="transactionTable">
       <thead>
         <tr>
-          <th>#</th>
+          <th>Sr. No</th>
           <th>Name</th>
           <th>Type</th>
           <th>Amount</th>
           <th>Interest %</th>
-          <th>From</th>
-          <th>Until</th>
+          <th>Start Date</th>
+          <th>Return Date</th>
           <th>Reason</th>
-          <th>Interest Accrued</th>
-          <th>Total w/ Interest</th>
+          <th>Interest Return</th>
           <th>Action</th>
         </tr>
       </thead>
-      <tbody id="tbody"></tbody>
+      <tbody></tbody>
     </table>
   </div>
 
-  <!-- Add button -->
-  <button class="fab" id="fab" aria-label="Add transaction">＋</button>
+  <div class="floating-btn">
+    <button class="btn" id="borrowedBtn">B</button>
+    <button class="btn" id="addBtn">+</button>
+  </div>
 
   <!-- Modal -->
-  <div class="modal" id="modal">
-    <div class="card">
+  <div id="transactionModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
       <h2>Add Transaction</h2>
-      <form id="form">
-        <div class="grid-2">
-          <div class="field">
-            <label for="name">Name</label>
-            <input id="name" type="text" placeholder="Person / Entity" required />
-          </div>
-          <div class="field">
-            <label for="type">Type</label>
-            <select id="type" required>
-              <option value="Lent">Lent</option>
-              <option value="Borrowed">Borrowed</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="amount">Amount (₹)</label>
-            <input id="amount" type="number" inputmode="decimal" step="0.01" min="0" placeholder="e.g., 1500.00" required />
-          </div>
-          <div class="field">
-            <label for="rate">Interest % (monthly, decimals allowed)</label>
-            <input id="rate" type="number" inputmode="decimal" step="0.1" min="0" placeholder="e.g., 5.6" />
-          </div>
-          <div class="field">
-            <label for="from">From date</label>
-            <input id="from" type="date" required />
-          </div>
-          <div class="field">
-            <label for="until">Until date</label>
-            <input id="until" type="date" />
-          </div>
-        </div>
-        <div class="field" style="margin-top:6px">
-          <label for="reason">Reason (optional)</label>
-          <input id="reason" type="text" placeholder="Notes / purpose" />
-        </div>
-        <div class="actions">
-          <button type="button" class="btn ghost" id="cancel">Cancel</button>
-          <button type="submit" class="btn primary">Save</button>
-        </div>
-      </form>
+      <input type="text" id="name" placeholder="Name" required>
+      <select id="type">
+        <option value="lent">Lent</option>
+        <option value="borrowed">Borrowed</option>
+      </select>
+      <input type="number" id="amount" placeholder="Amount" required>
+      <input type="number" step="0.1" id="interest" placeholder="Interest Rate (%)">
+      <input type="date" id="fromDate" required>
+      <input type="date" id="untilDate" required>
+      <input type="text" id="reason" placeholder="Reason">
+      <button id="saveTransaction">Save</button>
     </div>
   </div>
 
   <script>
-    // ===== State & storage =====
-    const tbody = document.getElementById('tbody');
-    const sumWith = document.getElementById('sumWith');
-    const sumWithout = document.getElementById('sumWithout');
-    const notify = document.getElementById('notify');
-    const btnBorrowed = document.getElementById('btnBorrowed');
-    const fab = document.getElementById('fab');
-    const modal = document.getElementById('modal');
-    const form = document.getElementById('form');
-    const cancelBtn = document.getElementById('cancel');
+    let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
 
-    const todayLabel = document.getElementById('today');
     const today = new Date();
-    const dayFmt = new Intl.DateTimeFormat('en-IN', { weekday:'long', day:'2-digit', month:'short', year:'numeric' });
-    todayLabel.textContent = dayFmt.format(today);
+    const todayString = today.toLocaleDateString("en-IN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById("todayDate").innerText = todayString;
 
-    let data = JSON.parse(localStorage.getItem('transactions_v2') || '[]');
-    let showBorrowedOnly = false;
-
-    // One-time notification per day key
-    const notifKey = 'notif_shown_' + today.toISOString().slice(0,10);
-
-    // ===== Utils =====
-    function monthDiff(a, b){
-      // count whole months difference, never negative
-      const start = new Date(a), end = new Date(b);
-      if (isNaN(start) || isNaN(end)) return 0;
-      let m = (end.getFullYear()-start.getFullYear())*12 + (end.getMonth()-start.getMonth());
-      return Math.max(0, m);
-    }
-    const fmtC = n => '₹' + Number(n).toFixed(2);
-
-    function calcInterest(amount, rate, from, until){
-      if (!rate || !until) return 0;
-      const months = monthDiff(from, until);
-      return (amount * (rate/100)) * months; // simple monthly interest
+    function saveTransactions() {
+      localStorage.setItem("transactions", JSON.stringify(transactions));
     }
 
-    function persist(){ localStorage.setItem('transactions_v2', JSON.stringify(data)); }
+    function calculateInterest(amount, rate, from, until) {
+      if (!rate) return 0;
+      const start = new Date(from);
+      const end = new Date(until);
+      const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+      return (amount * (rate / 100) * months).toFixed(2);
+    }
 
-    // ===== Rendering =====
-    function render(){
-      tbody.innerHTML = '';
-      let netWith = 0, netWithout = 0;
-      let dueTodayName = null;
+    function updateTable(filterBorrowed = false) {
+      const tbody = document.querySelector("#transactionTable tbody");
+      tbody.innerHTML = "";
+      let totalBorrowed = 0, totalLent = 0, netBalance = 0, netBalanceInterest = 0;
 
-      data.forEach((t, idx) => {
-        if (showBorrowedOnly && t.type !== 'Borrowed') return;
+      transactions.forEach((t, index) => {
+        if (filterBorrowed && t.type !== "borrowed") return;
 
-        const interest = calcInterest(t.amount, t.rate, t.from, t.until);
-        const totalWith = t.amount + interest;
+        const interestReturn = calculateInterest(t.amount, parseFloat(t.interest), t.fromDate, t.untilDate);
+        const row = `<tr>
+          <td>${index + 1}</td>
+          <td>${t.name}</td>
+          <td>${t.type}</td>
+          <td>₹${t.amount}</td>
+          <td>${t.interest || 0}%</td>
+          <td>${t.fromDate}</td>
+          <td>${t.untilDate}</td>
+          <td>${t.reason || "-"}</td>
+          <td>₹${interestReturn}</td>
+          <td><button onclick="deleteTransaction(${index})">❌</button></td>
+        </tr>`;
+        tbody.insertAdjacentHTML("beforeend", row);
 
-        if (t.type === 'Lent'){ netWith += totalWith; netWithout += t.amount; }
-        else { netWith -= totalWith; netWithout -= t.amount; }
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${idx+1}</td>
-          <td>${escapeHtml(t.name)}</td>
-          <td><span class="chip ${t.type==='Lent'?'lent':'borrowed'}">${t.type}</span></td>
-          <td>${fmtC(t.amount)}</td>
-          <td>${(t.rate || 0).toFixed(1)}%</td>
-          <td>${t.from || '-'}</td>
-          <td>${t.until || '-'}</td>
-          <td>${escapeHtml(t.reason || '-')}</td>
-          <td>${fmtC(interest)}</td>
-          <td>${fmtC(totalWith)}</td>
-          <td><button class="del" aria-label="Delete" onclick="delRow(${idx})">Delete</button></td>
-        `;
-        tbody.appendChild(tr);
-
-        // Due today notification (Borrowed only)
-        if (!localStorage.getItem(notifKey) && t.type==='Borrowed' && t.until){
-          const d = new Date(t.until);
-          if (d.toDateString() === today.toDateString() && !dueTodayName){
-            dueTodayName = t.name;
-          }
+        if (t.type === "borrowed") {
+          totalBorrowed += parseFloat(t.amount);
+          netBalance -= parseFloat(t.amount);
+          netBalanceInterest -= (parseFloat(t.amount) + parseFloat(interestReturn));
+        } else {
+          totalLent += parseFloat(t.amount);
+          netBalance += parseFloat(t.amount);
+          netBalanceInterest += (parseFloat(t.amount) + parseFloat(interestReturn));
         }
       });
 
-      sumWith.textContent = fmtC(netWith);
-      sumWithout.textContent = fmtC(netWithout);
+      document.getElementById("totalBorrowed").innerText = `₹${totalBorrowed}`;
+      document.getElementById("totalLent").innerText = `₹${totalLent}`;
+      document.getElementById("netBalance").innerText = `₹${netBalance}`;
+      document.getElementById("netBalanceInterest").innerText = `₹${netBalanceInterest}`;
+    }
 
-      if (dueTodayName){
-        notify.textContent = `Reminder: ${dueTodayName} is due today.`;
-        notify.classList.add('show');
-        // mark shown once per day
-        localStorage.setItem(notifKey,'1');
-      } else {
-        // show previously-shown note? keep hidden unless there is a new one
-        notify.classList.remove('show');
+    function deleteTransaction(index) {
+      transactions.splice(index, 1);
+      saveTransactions();
+      updateTable();
+    }
+
+    document.getElementById("addBtn").onclick = () => {
+      document.getElementById("transactionModal").style.display = "block";
+    };
+    document.getElementById("closeModal").onclick = () => {
+      document.getElementById("transactionModal").style.display = "none";
+    };
+
+    document.getElementById("saveTransaction").onclick = () => {
+      const t = {
+        name: document.getElementById("name").value,
+        type: document.getElementById("type").value,
+        amount: parseFloat(document.getElementById("amount").value),
+        interest: document.getElementById("interest").value,
+        fromDate: document.getElementById("fromDate").value,
+        untilDate: document.getElementById("untilDate").value,
+        reason: document.getElementById("reason").value
+      };
+      transactions.push(t);
+      saveTransactions();
+      updateTable();
+      document.getElementById("transactionModal").style.display = "none";
+    };
+
+    document.getElementById("borrowedBtn").onclick = () => {
+      updateTable(true);
+    };
+
+    // Notifications for due returns
+    transactions.forEach(t => {
+      if (t.untilDate === today.toISOString().split('T')[0]) {
+        document.getElementById("notification").innerHTML = `<div class="notification">${t.name} should return today (${t.untilDate})</div>`;
       }
-    }
-
-    // escape HTML for safe injection
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
-
-    // ===== Interactions =====
-    window.delRow = function(i){
-      data.splice(i,1);
-      persist(); render();
-    }
-
-    fab.addEventListener('click', ()=> modal.classList.add('show'));
-    cancelBtn.addEventListener('click', ()=> modal.classList.remove('show'));
-    modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.classList.remove('show'); });
-
-    btnBorrowed.addEventListener('click', ()=>{
-      showBorrowedOnly = !showBorrowedOnly;
-      btnBorrowed.style.background = showBorrowedOnly ? '#1d4ed8' : '#fff';
-      btnBorrowed.style.color = showBorrowedOnly ? '#fff' : '#1d4ed8';
-      render();
     });
 
-    form.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const type = document.getElementById('type').value;
-      const amount = parseFloat(document.getElementById('amount').value) || 0;
-      const rate = parseFloat(document.getElementById('rate').value); // allow decimals like 5.6
-      const from = document.getElementById('from').value || '';
-      const until = document.getElementById('until').value || '';
-      const reason = document.getElementById('reason').value.trim();
-
-      data.push({name, type, amount, rate: isNaN(rate)?0:rate, from, until, reason});
-      persist();
-      form.reset();
-      modal.classList.remove('show');
-      render();
-    });
-
-    // Init
-    render();
+    updateTable();
   </script>
 </body>
 </html>
