@@ -1,4 +1,3 @@
--------- K U M A S G I ------------
 <!DOCTYPE html>
 <html lang="en">
 <head>
